@@ -40,8 +40,8 @@ int main() {  //메인함수
 			const auto num_boxes = output.rows; // 추론된 객체 행
 			for (int i = 0; i < num_boxes; i++)  // 이중 반복문
 			{
-				auto x = output.at<float>(i, 0) * frame.cols;   //바운딩 박스 x좌표
-				auto y = output.at<float>(i, 1) * frame.rows;   //바운딩 박스 y좌표
+				auto x = output.at<float>(i, 0) * frame.cols;   //바운딩 박스 중심좌표
+				auto y = output.at<float>(i, 1) * frame.rows;   //바운딩 박스 중심좌표
 				auto width = output.at<float>(i, 2) * frame.cols;   //바운딩 박스 폭
 				auto height = output.at<float>(i, 3) * frame.rows;   //바운딩 박스 높이
 				Rect rect(x - width / 2, y - height / 2, width, height);  //바운딩 박스 Rect 객체
