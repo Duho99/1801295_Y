@@ -1,96 +1,96 @@
-#include <iostream>     //<iostream>Æ÷ÇÔ
-#include <opencv2/opencv.hpp>     //<opencv2/opencv.hpp>Æ÷ÇÔ
-#include <stdio.h>     //<stdio.h>Æ÷ÇÔ
-#include <Windows.h>     //<Windows.h>Æ÷ÇÔ
-#include <conio.h>     //<conio.h>Æ÷ÇÔ
-#include <mmsystem.h>     //<mmsystem.h>Æ÷ÇÔ
-#pragma comment(lib,"winmm.lib")  //winmm.lib ¶óÀÌºê·¯¸® Ãß°£
-using namespace std;  //std »ı·«
-using namespace cv;  //cv »ı·«
-using namespace cv::dnn;  //dnn ¸ğµâ Æ÷ÇÔ
-const int NUM_CLASSES = 7;  //Å¬·¡½º °³¼ö
-const Scalar colors[] = {{0, 255, 255},{255, 255, 0},{0, 255, 0},{255, 0, 0}};  //°´Ã¼ ¹è¿­ ¼±¾ğ
-const auto NUM_COLORS = sizeof(colors) / sizeof(colors[0]);  //ÄÃ·¯ ¹øÈ£
-void sound(string name);  // À½¼º ¸Ş¼¼Áö Ãâ·ÂÇÔ¼ö ¼±¾ğ
-int main() {  //¸ŞÀÎÇÔ¼ö
-	vector <string> class_names = { "thirty", "fifty", "sixty", "speedbump", "leftban", "U_turn", "car" };  //Å¬·¡½º ÀÌ¸§ º¤ÅÍ
-	auto net = cv::dnn::readNetFromDarknet("yolov4-traffic.cfg", "yolov4-traffic_final.weights");  //¹Ì¸® ÇĞ½ÀµÈ ¸ğµ¨·Î Net°´Ã¼ »ı¼º
-	net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV); // °è»ê¿¡ opencv¸¦ »ç¿ëÇÏµµ·ÏÇÔ
-	net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);  // °è»ê¿¡ CPU¸¦ »ç¿ëÇÏµµ·ÏÇÔ
-	auto output_names = net.getUnconnectedOutLayersNames(); //¿¬°áµÇÁö ¾ÊÀº ·¹ÀÌ¾îÀÇ ÀÌ¸§À» ¹İÈ¯
-	for (int i = 1; i <= 7; i++) {  //¹İº¹¹®
-		string filename = format("test%d.jpg", i);   // ÆÄÀÏÀÌ¸§ ÀúÀå
-		Mat frame = imread(filename);  // Å×½ºÆ® µ¥ÀÌÅÍ ÀĞ±â
-		Mat blob;  // blob°´Ã¼ »ı¼º
-		vector<Mat> detections;  //µğÅØ¼Ç °´Ã¼ »ı¼º
-		if (frame.empty()){		// Å×½ºÆ® µ¥ÀÌÅÍ À¯¹« Á¶°Ç¹®	
-			cerr << "frame empty" << endl; return -1;}  //¿¡·¯ ¸Ş¼¼Áö Ãâ·Â
-		cv::dnn::blobFromImage(frame, blob, 1 / 255.f, Size(320,320), Scalar(), true, false, CV_32F);  //ÀÔ·Â¿µ»óÀ¸·Î ºÎÅÍ 4Â÷¿ø ºí·Ó °´Ã¼ ¹İÈ¯
-		net.setInput(blob);  //ºí·Ó °´Ã¼¸¦ ³×Æ®¿öÅ© ÀÔ·ÂÀ¸·Î ¼³Á¤
-		TickMeter tm;   // °´Ã¼ ¼±¾ğ
-		tm.start();  //½Ã°£ ÃøÁ¤ ½ÃÀÛ
-		net.forward(detections, output_names);  //Ãß·ĞÇÏ¿© °á°ú¸¦ °´Ã¼·Î ¹İÈ¯
-		tm.stop();  //½Ã°£ ÃøÁ¤ ¸¶°¨
-		cout << "time : " << tm.getTimeMilli() << endl;  //Ãß·Ğ ½Ã°£ Ãâ·Â
-		vector<int> indices[NUM_CLASSES];  // Å¬·¡½º ÀÎµ¦½º
-		vector<cv::Rect> boxes[NUM_CLASSES];  //Å¬·¡½º ¹Ù¿îµù ¹Ú½º
-		vector<float> scores[NUM_CLASSES];   //Å¬·¡½º ½Å·Úµµ
-		for (auto& output : detections)  //¹İº¹¹®
+#include <iostream>     //<iostream>í¬í•¨
+#include <opencv2/opencv.hpp>     //<opencv2/opencv.hpp>í¬í•¨
+#include <stdio.h>     //<stdio.h>í¬í•¨
+#include <Windows.h>     //<Windows.h>í¬í•¨
+#include <conio.h>     //<conio.h>í¬í•¨
+#include <mmsystem.h>     //<mmsystem.h>í¬í•¨
+#pragma comment(lib,"winmm.lib")  //winmm.lib ë¼ì´ë¸ŒëŸ¬ë¦¬ ì¶”ê°„
+using namespace std;  //std ìƒëµ
+using namespace cv;  //cv ìƒëµ
+using namespace cv::dnn;  //dnn ëª¨ë“ˆ í¬í•¨
+const int NUM_CLASSES = 7;  //í´ë˜ìŠ¤ ê°œìˆ˜
+const Scalar colors[] = {{0, 255, 255},{255, 255, 0},{0, 255, 0},{255, 0, 0}};  //ê°ì²´ ë°°ì—´ ì„ ì–¸
+const auto NUM_COLORS = sizeof(colors) / sizeof(colors[0]);  //ì»¬ëŸ¬ ë²ˆí˜¸
+void sound(string name);  // ìŒì„± ë©”ì„¸ì§€ ì¶œë ¥í•¨ìˆ˜ ì„ ì–¸
+int main() {  //ë©”ì¸í•¨ìˆ˜
+	vector <string> class_names = { "thirty", "fifty", "sixty", "speedbump", "leftban", "U_turn", "car" };  //í´ë˜ìŠ¤ ì´ë¦„ ë²¡í„°
+	auto net = cv::dnn::readNetFromDarknet("yolov4-traffic.cfg", "yolov4-traffic_final.weights");  //ë¯¸ë¦¬ í•™ìŠµëœ ëª¨ë¸ë¡œ Netê°ì²´ ìƒì„±
+	net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV); // ê³„ì‚°ì— opencvë¥¼ ì‚¬ìš©í•˜ë„ë¡í•¨
+	net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);  // ê³„ì‚°ì— CPUë¥¼ ì‚¬ìš©í•˜ë„ë¡í•¨
+	auto output_names = net.getUnconnectedOutLayersNames(); //ì—°ê²°ë˜ì§€ ì•Šì€ ë ˆì´ì–´ì˜ ì´ë¦„ì„ ë°˜í™˜
+	for (int i = 1; i <= 7; i++) {  //ë°˜ë³µë¬¸
+		string filename = format("test%d.jpg", i);   // íŒŒì¼ì´ë¦„ ì €ì¥
+		Mat frame = imread(filename);  // í…ŒìŠ¤íŠ¸ ë°ì´í„° ì½ê¸°
+		Mat blob;  // blobê°ì²´ ìƒì„±
+		vector<Mat> detections;  //ë””í…ì…˜ ê°ì²´ ìƒì„±
+		if (frame.empty()){		// í…ŒìŠ¤íŠ¸ ë°ì´í„° ìœ ë¬´ ì¡°ê±´ë¬¸	
+			cerr << "frame empty" << endl; return -1;}  //ì—ëŸ¬ ë©”ì„¸ì§€ ì¶œë ¥
+		cv::dnn::blobFromImage(frame, blob, 1 / 255.f, Size(320,320), Scalar(), true, false, CV_32F);  //ì…ë ¥ì˜ìƒìœ¼ë¡œ ë¶€í„° 4ì°¨ì› ë¸”ë¡­ ê°ì²´ ë°˜í™˜
+		net.setInput(blob);  //ë¸”ë¡­ ê°ì²´ë¥¼ ë„¤íŠ¸ì›Œí¬ ì…ë ¥ìœ¼ë¡œ ì„¤ì •
+		TickMeter tm;   // ê°ì²´ ì„ ì–¸
+		tm.start();  //ì‹œê°„ ì¸¡ì • ì‹œì‘
+		net.forward(detections, output_names);  //ì¶”ë¡ í•˜ì—¬ ê²°ê³¼ë¥¼ ê°ì²´ë¡œ ë°˜í™˜
+		tm.stop();  //ì‹œê°„ ì¸¡ì • ë§ˆê°
+		cout << "time : " << tm.getTimeMilli() << endl;  //ì¶”ë¡  ì‹œê°„ ì¶œë ¥
+		vector<int> indices[NUM_CLASSES];  // í´ë˜ìŠ¤ ì¸ë±ìŠ¤
+		vector<cv::Rect> boxes[NUM_CLASSES];  //í´ë˜ìŠ¤ ë°”ìš´ë”© ë°•ìŠ¤
+		vector<float> scores[NUM_CLASSES];   //í´ë˜ìŠ¤ ì‹ ë¢°ë„
+		for (auto& output : detections)  //ë°˜ë³µë¬¸
 		{
-			const auto num_boxes = output.rows; // Ãß·ĞµÈ °´Ã¼ Çà
-			for (int i = 0; i < num_boxes; i++)  // ÀÌÁß ¹İº¹¹®
+			const auto num_boxes = output.rows; // ì¶”ë¡ ëœ ê°ì²´ í–‰
+			for (int i = 0; i < num_boxes; i++)  // ì´ì¤‘ ë°˜ë³µë¬¸
 			{
-				auto x = output.at<float>(i, 0) * frame.cols;   //¹Ù¿îµù ¹Ú½º Áß½ÉÁÂÇ¥
-				auto y = output.at<float>(i, 1) * frame.rows;   //¹Ù¿îµù ¹Ú½º Áß½ÉÁÂÇ¥
-				auto width = output.at<float>(i, 2) * frame.cols;   //¹Ù¿îµù ¹Ú½º Æø
-				auto height = output.at<float>(i, 3) * frame.rows;   //¹Ù¿îµù ¹Ú½º ³ôÀÌ
-				Rect rect(x - width / 2, y - height / 2, width, height);  //¹Ù¿îµù ¹Ú½º Rect °´Ã¼
-				for (int c = 0; c < NUM_CLASSES; c++)  //class X ¹İº¹¹®
+				auto x = output.at<float>(i, 0) * frame.cols;   //ë°”ìš´ë”© ë°•ìŠ¤ xì¢Œí‘œ
+				auto y = output.at<float>(i, 1) * frame.rows;   //ë°”ìš´ë”© ë°•ìŠ¤ yì¢Œí‘œ
+				auto width = output.at<float>(i, 2) * frame.cols;   //ë°”ìš´ë”© ë°•ìŠ¤ í­
+				auto height = output.at<float>(i, 3) * frame.rows;   //ë°”ìš´ë”© ë°•ìŠ¤ ë†’ì´
+				Rect rect(x - width / 2, y - height / 2, width, height);  //ë°”ìš´ë”© ë°•ìŠ¤ Rect ê°ì²´
+				for (int c = 0; c < NUM_CLASSES; c++)  //class X ë°˜ë³µë¬¸
 				{
-					auto confidence = *output.ptr<float>(i, 5 + c);   //¹Ù¿îµù ¹Ú½º¾È¿¡ class X °´Ã¼°¡ Á¸ÀçÇÒ È®·ü
-					if (confidence >= 0.5)  // È®·ü ½Å·Úµµ°¡ 0.5º¸´Ù Å©¸é
+					auto confidence = *output.ptr<float>(i, 5 + c);   //ë°”ìš´ë”© ë°•ìŠ¤ì•ˆì— class X ê°ì²´ê°€ ì¡´ì¬í•  í™•ë¥ 
+					if (confidence >= 0.5)  // í™•ë¥  ì‹ ë¢°ë„ê°€ 0.5ë³´ë‹¤ í¬ë©´
 					{
-						boxes[c].push_back(rect); //¹Ù¿îµù ¹Ú½º Á¤º¸ ÀúÀå
-						scores[c].push_back(confidence);  //½Å·Úµµ ÀúÀå
+						boxes[c].push_back(rect); //ë°”ìš´ë”© ë°•ìŠ¤ ì •ë³´ ì €ì¥
+						scores[c].push_back(confidence);  //ì‹ ë¢°ë„ ì €ì¥
 					}
 				}
 			}
 		}
-		for (int c = 0; c < NUM_CLASSES; c++)    //¹İº¹¹®
-			cv::dnn::NMSBoxes(boxes[c], scores[c], 0.0, 0.5, indices[c]);   //ÁÖ¾îÁø »óÀÚ¿Í ÇØ´ç Á¡¼ö°¡ ¾Æ´Ñ ÃÖ´ë ¾ïÁ¦¸¦ ¼öÇà
-		for (int c = 0; c < NUM_CLASSES; c++)    //¹İº¹¹®
+		for (int c = 0; c < NUM_CLASSES; c++)    //ë°˜ë³µë¬¸
+			cv::dnn::NMSBoxes(boxes[c], scores[c], 0.0, 0.5, indices[c]);   //ì£¼ì–´ì§„ ìƒìì™€ í•´ë‹¹ ì ìˆ˜ê°€ ì•„ë‹Œ ìµœëŒ€ ì–µì œë¥¼ ìˆ˜í–‰
+		for (int c = 0; c < NUM_CLASSES; c++)    //ë°˜ë³µë¬¸
 		{
-			for (int i = 0; i < indices[c].size(); ++i)  //¹İº¹¹®
+			for (int i = 0; i < indices[c].size(); ++i)  //ë°˜ë³µë¬¸
 			{
-				const auto color = colors[c % NUM_COLORS];  //ÄÃ·¯ÁöÁ¤
-				auto idx = indices[c][i];  //ÀÎµ¦½º
-				const auto& rect = boxes[c][idx];  //¹Ù¿îµù ¹Ú½º
-				rectangle(frame, Point(rect.x, rect.y), Point(rect.x + rect.width, rect.y + rect.height), color, 3);  //»ç°¢Çü ±×¸®±â (¹Ù¿îµù ¹Ú½º)
-				string label_str = class_names[c] + ": " + format("%.02lf", scores[c][idx]);  //Å¬·¡½º¸í°ú ½Å·Úµµ ¹®ÀÚ¿­
-				int baseline; //º¯¼ö¼±¾ğ
-				auto label_bg_sz = getTextSize(label_str, FONT_HERSHEY_COMPLEX_SMALL, 1, 1, &baseline);  //label_str ÅØ½ºÆ® »çÀÌÁî
+				const auto color = colors[c % NUM_COLORS];  //ì»¬ëŸ¬ì§€ì •
+				auto idx = indices[c][i];  //ì¸ë±ìŠ¤
+				const auto& rect = boxes[c][idx];  //ë°”ìš´ë”© ë°•ìŠ¤
+				rectangle(frame, Point(rect.x, rect.y), Point(rect.x + rect.width, rect.y + rect.height), color, 3);  //ì‚¬ê°í˜• ê·¸ë¦¬ê¸° (ë°”ìš´ë”© ë°•ìŠ¤)
+				string label_str = class_names[c] + ": " + format("%.02lf", scores[c][idx]);  //í´ë˜ìŠ¤ëª…ê³¼ ì‹ ë¢°ë„ ë¬¸ìì—´
+				int baseline; //ë³€ìˆ˜ì„ ì–¸
+				auto label_bg_sz = getTextSize(label_str, FONT_HERSHEY_COMPLEX_SMALL, 1, 1, &baseline);  //label_str í…ìŠ¤íŠ¸ ì‚¬ì´ì¦ˆ
 				rectangle(frame, Point(rect.x, rect.y - label_bg_sz.height - baseline - 10), 
-					Point(rect.x + label_bg_sz.width, rect.y), color, FILLED);  //»ç°¢Çü ±×¸®±â (Å¬·¡½º ÀÌ¸§, ½Å·Úµµ)
+					Point(rect.x + label_bg_sz.width, rect.y), color, FILLED);  //ì‚¬ê°í˜• ê·¸ë¦¬ê¸° (í´ë˜ìŠ¤ ì´ë¦„, ì‹ ë¢°ë„)
 				putText(frame, label_str, Point(rect.x, rect.y - baseline - 5),
-					FONT_HERSHEY_COMPLEX_SMALL, 1,Scalar(0, 0, 0));  //Å¬·¡½º¸í°ú ½Å·Úµµ ¹®ÀÚ¿­ ¾²±â
-				if (class_names[c] == "thirty")sound("thirty");     //Å¬·¡½º¸í¿¡ µû¸¥ ÇÔ¼ö È£Ãâ
-				else if (class_names[c] == "fifty")sound("fifty");     //Å¬·¡½º¸í¿¡ µû¸¥ ÇÔ¼ö È£Ãâ
-				else if (class_names[c] == "sixty")sound("sixty");     //Å¬·¡½º¸í¿¡ µû¸¥ ÇÔ¼ö È£Ãâ
-				else if (class_names[c] == "leftban")sound("leftban");     //Å¬·¡½º¸í¿¡ µû¸¥ ÇÔ¼ö È£Ãâ
-				else if (class_names[c] == "speedbump")sound("speedbump");     //Å¬·¡½º¸í¿¡ µû¸¥ ÇÔ¼ö È£Ãâ
-				else if (class_names[c] == "U_turn")sound("U_turn");     //Å¬·¡½º¸í¿¡ µû¸¥ ÇÔ¼ö È£Ãâ
+					FONT_HERSHEY_COMPLEX_SMALL, 1,Scalar(0, 0, 0));  //í´ë˜ìŠ¤ëª…ê³¼ ì‹ ë¢°ë„ ë¬¸ìì—´ ì“°ê¸°
+				if (class_names[c] == "thirty")sound("thirty");     //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ í•¨ìˆ˜ í˜¸ì¶œ
+				else if (class_names[c] == "fifty")sound("fifty");     //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ í•¨ìˆ˜ í˜¸ì¶œ
+				else if (class_names[c] == "sixty")sound("sixty");     //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ í•¨ìˆ˜ í˜¸ì¶œ
+				else if (class_names[c] == "leftban")sound("leftban");     //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ í•¨ìˆ˜ í˜¸ì¶œ
+				else if (class_names[c] == "speedbump")sound("speedbump");     //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ í•¨ìˆ˜ í˜¸ì¶œ
+				else if (class_names[c] == "U_turn")sound("U_turn");     //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ í•¨ìˆ˜ í˜¸ì¶œ
 			}
 		}
-		imshow("output", frame);  // ¿µ»ó Ãâ·Â
-		waitKey();  // Å°º¸µå ´ë±â
+		imshow("output", frame);  // ì˜ìƒ ì¶œë ¥
+		waitKey();  // í‚¤ë³´ë“œ ëŒ€ê¸°
 	}
-	return 0;  //ÇÔ¼ö Á¾·á
+	return 0;  //í•¨ìˆ˜ ì¢…ë£Œ
 }
-void sound(string name) {  // À½¼º ¸Ş¼¼Áö Ãâ·ÂÇÔ¼ö Á¤ÀÇ
-	if (name == "thirty")PlaySound(TEXT("sound30"), 0, SND_FILENAME | SND_ASYNC);  //Å¬·¡½º¸í¿¡ µû¸¥ À½¼º¸Ş¼¼Áö Ãâ·Â
-	else if (name == "fifty")PlaySound(TEXT("sound50"), 0, SND_FILENAME | SND_ASYNC); //Å¬·¡½º¸í¿¡ µû¸¥ À½¼º¸Ş¼¼Áö Ãâ·Â
-	else if (name == "sixty")PlaySound(TEXT("sound60"), 0, SND_FILENAME | SND_ASYNC); //Å¬·¡½º¸í¿¡ µû¸¥ À½¼º¸Ş¼¼Áö Ãâ·Â
-	else if (name == "leftban")PlaySound(TEXT("soundleftban"), 0, SND_FILENAME | SND_ASYNC); //Å¬·¡½º¸í¿¡ µû¸¥ À½¼º¸Ş¼¼Áö Ãâ·Â
-	else if (name == "speedbump")PlaySound(TEXT("soundbump"), 0, SND_FILENAME | SND_ASYNC); //Å¬·¡½º¸í¿¡ µû¸¥ À½¼º¸Ş¼¼Áö Ãâ·Â
-	else if (name == "U_turn")PlaySound(TEXT("soundU_turn"), 0, SND_FILENAME | SND_ASYNC); //Å¬·¡½º¸í¿¡ µû¸¥ À½¼º¸Ş¼¼Áö Ãâ·Â
+void sound(string name) {  // ìŒì„± ë©”ì„¸ì§€ ì¶œë ¥í•¨ìˆ˜ ì •ì˜
+	if (name == "thirty")PlaySound(TEXT("sound30"), 0, SND_FILENAME | SND_ASYNC);  //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ ìŒì„±ë©”ì„¸ì§€ ì¶œë ¥
+	else if (name == "fifty")PlaySound(TEXT("sound50"), 0, SND_FILENAME | SND_ASYNC); //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ ìŒì„±ë©”ì„¸ì§€ ì¶œë ¥
+	else if (name == "sixty")PlaySound(TEXT("sound60"), 0, SND_FILENAME | SND_ASYNC); //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ ìŒì„±ë©”ì„¸ì§€ ì¶œë ¥
+	else if (name == "leftban")PlaySound(TEXT("soundleftban"), 0, SND_FILENAME | SND_ASYNC); //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ ìŒì„±ë©”ì„¸ì§€ ì¶œë ¥
+	else if (name == "speedbump")PlaySound(TEXT("soundbump"), 0, SND_FILENAME | SND_ASYNC); //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ ìŒì„±ë©”ì„¸ì§€ ì¶œë ¥
+	else if (name == "U_turn")PlaySound(TEXT("soundU_turn"), 0, SND_FILENAME | SND_ASYNC); //í´ë˜ìŠ¤ëª…ì— ë”°ë¥¸ ìŒì„±ë©”ì„¸ì§€ ì¶œë ¥
 }
